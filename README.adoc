@@ -1,0 +1,57 @@
+---
+permalink: /guides/onboarding-with-che/
+---
+:page-layout: guide
+:page-duration: 40 minutes
+:page-releasedate: 2019-11-16
+:page-description: How to onboard your developers faster with an integrated hosted IDE in Kabanero
+:guide-author: Kabanero
+:page-tags: ['Che', 'Java']
+:page-guide-category: collections
+= How to onboard your developers faster with an integrated hosted IDE in Kabanero
+
+// Copyright 2019 IBM Corporation and others.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+
+[.hidden]
+NOTE: This repository contains the guide documentation source. To view the guide in published form, view it on the https://kabanero.io/guides/{projectid}.html[website].
+
+Discover how to set up Eclipse Che in your Kabanero environment to provide a containerized IDE for your developers to build
+microservice applications.
+
+// =================================================================================================
+// What you'll learn
+// =================================================================================================
+
+== What you'll learn
+
+You will learn how to install and configure Eclipse Che for Kabanero Foundation.
+
+// =================================================================================================
+// Prerequisites
+// =================================================================================================
+
+== Prerequisites
+
+. Red Hat OpenShift Container Platform (OCP) version 4.2
+. Kabanero Foundation version 0.3.0
+.
+
+// =================================================================================================
+// Getting started
+// =================================================================================================
+
+== Getting started
