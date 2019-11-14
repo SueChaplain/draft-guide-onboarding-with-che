@@ -36,22 +36,96 @@ microservice applications.
 // What you'll learn
 // =================================================================================================
 
-== What you'll learn
-
-You will learn how to install and configure Eclipse Che for Kabanero Foundation.
+== What you will learn
+You will learn how to build a containerized microservices application using Codewind on Eclipse Che running on OpenShift Container Plaftorm. 
 
 // =================================================================================================
 // Prerequisites
 // =================================================================================================
 
 == Prerequisites
-
-. Red Hat OpenShift Container Platform (OCP) version 4.2
-. Kabanero Foundation version 0.3.0
-.
+. You must have https://docs.openshift.com/container-platform/4.2/welcome/index.html[Red Hat OpenShift Container Platform (OCP) 4.2] installed.
+. You must install https://kabanero.io/docs/[Kabanero 0.3.0].
 
 // =================================================================================================
 // Getting started
 // =================================================================================================
 
 == Getting started
+Codewind and Eclipse Che combine to simplify and enhance online development in containers with features to write, debug, and deploy cloud-native applications. In this guide, we will show you how you can install and configure Codewind for Eclipse Che on OCP and use Codewind to develop and deploy a simple microservice application.
+
+// =================================================================================================
+// Installing Codewind on Eclipse Che
+// =================================================================================================
+
+== Installing Codewind on Eclipse Che
+To install Codewind on Eclipse Che you will need to follow the instructions in the Codewind guide https://www.eclipse.org/codewind/installoncloud.html[Installing Codewind on Eclipse Che]. 
+However, there are a number of steps in the guide which are either not applicable or only applicable when installing Codewind, Che and OCP. 
+
+=== *Prerequisites* 
+You must set up the PersistentVolume (PV) with Network File System (NFS) as only NFS is 
+available for OCP 4.2. You may find https://github.ibm.com/dev-ex/che-docs/wiki/Setting-up-Persistent-Volumes-for-Eclipse-Che[Setting up Persistent Volumes for Eclipse Che]
+useful when setting up NFS volumes on the cluster. Note that the PV access modes must be `RWO,RWX`. To enable this add  `ReadWriteMany` to the `accessModes` entries in the `che-nfs-pv.yaml`.
+```
+accessModes:
+    - ReadWriteOnce
+    - ReadWriteMany
+```
+=== *Installing Che with chectl*
+Update `codewind-checluster.yaml` to use the `kabanero/kabanero-che` image.
+```
+server:
+    # server image used in Che deployment
+    cheImage: 'kabanero/kabanero-che'
+    # tag of an image used in Che deployment
+    cheImageTag: '0.5.1'
+```
+On OpenShift 4.2 run the command: `chectl server:start --platform=openshift --installer=operator --che-operator-cr-yaml=<codewind-che.yaml file>`
+
+=== *Enabling privileged and root containers to run*
+The output from starting the Che server contains a line showing the namespace that you
+need to provide to allow Che to run as privileged and as root. Assuming `che` is the namespace 
+run the commands:
+
+```
+oc adm policy add-scc-to-group privileged system:serviceaccounts:che
+oc adm policy add-scc-to-group anyuid system:serviceaccounts:che
+```
+
+=== *After installing Che*
+After Che is started and running, add the container registry that will be used with Codewind.  Examples of common deployment registries, how to authenticate registry credentials and how to 
+specify a deployment registry in CodeWind are available in the 
+https://www.eclipse.org/codewind/dockerregistry.html[Codewind Docker registry guidance]
+.
+
+For example, for OCP 4.2 using the OpenShift Registry use these values.
+```
+Host: docker-registry.default.svc:5000
+Codewind deployment registry: docker-registry.default.svc:5000/<project>
+Credentials: OpenShift user name and token
+```
+Note that the Codewind Docker registry guidance includes a 
+section *Instructions specific to OKD and OpenShift* which links to detailed guide
+on https://www.eclipse.org/codewind/openshiftregistry.html[Using the OpenShift internal registry with Codewind]. 
+Follow this guide up to the section *Adding the OpenShift registry in Che*. *Do not* follow the next
+section *Adding the OpenShift registry in Codewind*. Go back to https://www.eclipse.org/codewind/installoncloud.html[Installing Codewind on Eclipse Che] and continue 
+with the next step *Creating the Codewind workspace*.
+
+=== *Creating the Codewind workspace*
+You do not need to confirm the Docker registry secrets as this was already completed when you 
+https://www.eclipse.org/codewind/openshiftregistry.html[set up a service account on the cluster]. 
+
+Make sure to specify the latest `devfile.yaml` which is currently 
+`https://raw.githubusercontent.com/eclipse/codewind-che-plugin/0.6.0/devfiles/0.6.0/devfile.yaml
+
+After creating the Codewind workspace you need to tell Codewind the container Registry
+where you want to the deploy your projects. Use the address of the container registry
+you set up after installing Che, for example `docker-registry.default.svc:5000/<project>`.
+
+=== *Using Codewind from the Che Theia IDE*
+- Add the Kabanero 0.3.0 collection to the codewind template.
+- Build a new project using the collection such as Java MicroProfile.
+- Run the project from Codewind.
+- Check the project code into github.
+- Create a webhook from the tekton dashboard.
+- Change the Java MicroProfile application to trigger the pipeline runs.
