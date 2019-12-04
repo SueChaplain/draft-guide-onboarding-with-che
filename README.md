@@ -1,10 +1,10 @@
 ---
 permalink: /guides/eclipse-che-kabanero-ocp/
 layout: guide-markdown
-title: Getting started with Codewind and Kabanero using Eclipse Che on OCP
+title: Getting started with Eclipse Che on OCP in Kabanero
 duration: 40 minutes
 releasedate: 2019-11-26
-description: Learn how to build a containerized microservices application using Codewind on Eclipse Che running on OpenShift Container Plaftorm 
+description: Learn how to configure Eclipse Che on OCP and use Codewind for Eclipse Che to build containerized microservices applications
 tags: ['Collection', 'Codewind', 'MicroProfile']
 guide-category: collections
 ---
@@ -31,52 +31,40 @@ guide-category: collections
 --->
 
 ## What you will learn
-You will learn how to build a containerized microservices application that is based on the Java MicroProfile Kabanero Collection using Codewind
- for Eclipse Che running on OpenShift Container Plaftorm. 
+You will learn how to set up Eclipse Che in a Kabanero instance that runs on Red Hat OpenShift Container Platform (OCP). You will then learn how to build a simple microservices application that is based on the Eclipse MicroProfile Kabanero Collection using Codewind for Eclipse Che as a containerized IDE.
 
 ## Prerequisites
-1. You must have installed [Red Hat OpenShift Container Platform (OCP) 4.2](https://docs.openshift.com/container-platform/4.2/welcome/index.html).
-1. You must have installed [Kabanero Foundation](https://kabanero.io/docs/ref/general/installing-kabanero-foundation.html)
+1. You must install [Red Hat OpenShift Container Platform (OCP) 4.2](https://docs.openshift.com/container-platform/4.2/welcome/index.html). If your cluster does not use dynamic provisioning for storage (e.g. glusterfs), you must set up NFS volumes. We recommend that you set up a dynamic NFS persistent volume by using the `nfs-client` from the kubernetes-incubator project as documented in this [guide](https://medium.com/faun/openshift-dynamic-nfs-persistent-volume-using-nfs-client-provisioner-fcbb8c9344e). The process can be automated, as shown in this example [NFS provisioner script](https://github.ibm.com/dacleyra/ocp-on-fyre/blob/master/nfs-storage-provisioner.sh).
+1. You must install [Kabanero Foundation 0.3.0 or later](https://kabanero.io/docs/ref/general/installing-kabanero-foundation.html)
 
 ## Getting started
-Eclipse Codewind and Eclipse Che combine to simplify and enhance online development in containers, with features to write, debug, and deploy
- cloud-native applications. Eclipse Codewind provides the ability to create new projects based on Kabanero Collections that include Application 
- stacks customized to meet your company policies and consistently deploy applications and microservices at scale. 
- 
- Kabanero installs on OpenShift Container Platform (OCP) and integrates a modern DevOps toolchain and Kabanero Collections which enable developers
-  to use runtimes and frameworks in pre-built container images called `Application stacks`. Eclipse Codewind provides the ability to create application
-   projects for these Application stacks and create projects based on a variety of different template types.
+Eclipse Codewind and Eclipse Che combine to simplify and enhance online development in containers, with features to write, debug, and deploy cloud-native applications. Eclipse Codewind provides the ability to create new projects based on Kabanero Collections. Kabanero Collections can be customized to include Application stacks that meet your company policies and allow you to consistently deploy applications and microservices at scale.
 
- In this guide, we will show you how you can install and configure Codewind for Eclipse Che on OCP and use Codewind to develop and deploy a simple 
-  microservice application.
+Kabanero installs on OpenShift Container Platform (OCP) and integrates a modern DevOps toolchain with Kabanero Collections that enable developers to use runtimes and frameworks in pre-built container images. Eclipse Codewind provides the ability to create application projects from Kabanero Collections that have a variety of different template types.
 
-## Set up the Persistent Volume
-If the cluster that you're installing Eclipse Che on does not use dynamic provisioning for storage (e.g. glusterfs), you must set up NFS volumes on the cluster.
- We recommend you set up a dynamic NFS persistent volume using the nfs-client from the kubernetes-incubator project as
- [documented in this guide](https://medium.com/faun/openshift-dynamic-nfs-persistent-volume-using-nfs-client-provisioner-fcbb8c9344e). This can be automated 
- as shwon in this example [NFS provisioner script](https://github.ibm.com/dacleyra/ocp-on-fyre/blob/master/nfs-storage-provisioner.sh).
+In this guide, you will install and configure Codewind for Eclipse Che on OCP and verify your implementation by using Codewind to develop and deploy a simple microservice application.
 
 ## Enable Che in Kabanero
-Once Kabanero is installed, there are two ways of enabling Che in the Kabanero Custom Resource Definiion
+Eclipse Che is installed on your cluster when you install Kabanero Foundation v0.3.0. When Kabanero is installed, you can use one of the following methods to enable Che in the Kabanero Custom Resource Definition (CRD):
 
 **Using the `oc` CLI**
 1. Open a terminal and run the command: `oc edit kabanero -n kabanero -o yaml`
-1. Set the `spec.che.enable` attribute to `true`
+1. Set the `spec.che.enable` attribute to `true`.
 1. Save the file.
 
 **Using the OpenShift Console**
-1. Switch the project to `kabanero`
-1. Under `Administration` click `Custom Resource Definitions`
-1. Open the `kabanero` CRD and click on the `Instances` tab.
-1. Open the `kabanero` name and click on the `YAML` tab.
-1. Edit the `spec.che.enable` attribute to `true`
-1. Click the `Save` button
+1. Switch the project to `kabanero`.
+1. Under **Administration**, click **Custom Resource Definitions**.
+1. Open the `kabanero` CRD and click on the **Instances** tab.
+1. Open the `kabanero` name and click on the **YAML** tab.
+1. Edit the `spec.che.enable` attribute to `true`.
+1. Click the **Save** button.
 
-After a short wait check the Kabanero custom resource (CR) by running this command:
+After a short wait, check the Kabanero custom resource by running the following command:
 ```
 oc get kabanero -n kabanero -o yaml
 ```
-You should see from the status that Che is available and ready.
+The output is similar to the following example, which shows that Che is available and ready:
 ```yaml
 status:
     appsody:
@@ -96,20 +84,19 @@ status:
 
 ## Launch the Che dashboard through the OCP console.
 
-1. Ensure that the Project is set to `kabanero`
-1. Under `Networking` select the `Routes` menu item
-1. The list of routes will include a new entry named `che`
-1. Click on the link in the `Location` column to open the Che dashboard running in Kabanero. 
-  * The default userid and password will be `admin` and `admin`.
+1. Ensure that the Project is set to `kabanero`.
+1. Under **Networking** select the **Routes** menu item. The list of routes includes a new entry named `che`.
+1. Click on the link in the **Location** column to open the Che dashboard running in Kabanero. The default userid is `admin` and the default password is `admin`.
 
 ![Che route location](/img/guide/eclipse-che-kabanero-ocp-kabanero-route-location.png)
 
-The Kabanero Landing page will open in a new browser tab inviting you to create a new workspace. 
-However, before proceeding Kabanero and Codewind need some extra configuration.
+The Kabanero Landing page opens in a new browser tab, inviting you to create a new workspace.
+However, before proceeding, Kabanero and Codewind require some further configuration.
 
 ## Enabling privileged and root containers to run
-In order to build container images Codewind is required to [run as privileged and as root](https://www.eclipse.org/codewind/mdt-che-installinfo.html#enabling-privileged-and-root-containers-to-run).
-Enter the commands:
+In order to build container images, Codewind must run as [privileged and root](https://www.eclipse.org/codewind/mdt-che-installinfo.html#enabling-privileged-and-root-containers-to-run).
+
+Run the following commands:
 
 ```
 oc project kabanero
@@ -118,11 +105,12 @@ oc adm policy add-scc-to-group anyuid system:serviceaccounts:kabanero
 ```
 
 ## Adding the OpenShift internal registry with Codewind
-Some of these instructions are adapted from [Adding the OpenShift internal registry with Codewind](https:www.eclipse.org/codewind/openshiftregistry.html).
 
-**Setting up a service account**
+**Note:** Parts of the following instructions are adapted from [Adding the OpenShift internal registry with Codewind](https:www.eclipse.org/codewind/openshiftregistry.html).
 
-In order to move container images in OpenShift you need to [create or identify a service account with sufficient access rights](https:www.eclipse.org/codewind/openshiftregistry.html#setting-up-a-service-account). Run the following commands:
+### Setting up a service account
+
+In order to move container images in OpenShift you must [create or identify a service account with sufficient access rights](https:www.eclipse.org/codewind/openshiftregistry.html#setting-up-a-service-account). Run the following commands:
 
 ```
 oc new-project svt-che-proj1
@@ -132,28 +120,33 @@ oc describe sa pusher
 oc describe secret pusher-token-5cl44
 ```
 
-You will need the service account name and token value from the secret to add the OpenShift registry.  
+You must know the *service account name* and *token value* from the **secret** to add to the OpenShift registry.  
 
-**Adding the OpenShift registry in Che**
+### Adding the OpenShift registry in Che
 
-From the Kabanero Landing Page, under the `Administration` menu item click on the `Add Registry` button.
+From the Kabanero Landing Page, under the **Administration** menu item, click on the **Add Registry** button.
 
-[Add the OpenShift registry in Che](https:www.eclipse.org/codewind/openshiftregistry.html#adding-the-openshift-registry-in-che) using the `pusher` service account set up previously and the token secret for the service account listed by the `oc describe secret` command. For OCP4.x use the registry address `image-registry.openshift-image-registry.svc:5000`
+[Add the OpenShift registry in Che](https:www.eclipse.org/codewind/openshiftregistry.html#adding-the-openshift-registry-in-che) by using the `pusher` service account that you set up previously and the token secret for the service account listed by the `oc describe secret` command. For OCP4.x use the registry address `image-registry.openshift-image-registry.svc:5000`.
 
 ![Add the OpenShift registry in Che](/img/guide/eclipse-che-kabanero-ocp-add-openshift-registry-in-che.png)
 
 ## Create the Codewind workspace
-Create the Codewind workspace using the latest CodeWind devfile. The general format for creating a Che workspace via a factory is `http://<che ingress domain>/f?url=<hosted devfile URL>`.
- Use the devfile `https://raw.githubusercontent.com/eclipse/codewind-che-plugin/0.6.0/devfiles/0.6.0/devfile.yaml` with your Che ingress domain. 
- For example `http://che-kabanero.apps.scrunch.os.fyre.ibm.com/f?url=https://raw.githubusercontent.com/eclipse/codewind-che-plugin/0.6.0/devfiles/0.6.0/devfile.yaml` 
+Create the Codewind workspace by using the latest CodeWind `devfile.yaml` file. The general format for creating a Che workspace by using a factory is `http://<che ingress domain>/f?url=<hosted devfile URL>`.
 
-**NOTE**
-1. there is a known issue on Chrome where the [workspace initialization hangs](https:github.com/eclipse/che/issues/15188). We recommend that you use another web browser to complete this step, for exmaple Firefox.
-1. You can only have one workspace running per devfile at a time now. You can have multiple workspaces, but the devfiles they’re based upon must be unique.
+Use the [devfile.yaml file](https://raw.githubusercontent.com/eclipse/codewind-che-plugin/0.6.0/devfiles/0.6.0/devfile.yaml) with your Che ingress domain.
+For example
+
+```
+http://che-kabanero.apps.scrunch.os.fyre.ibm.com/f?url=https://raw.githubusercontent.com/eclipse/codewind-che-plugin/0.6.0/devfiles/0.6.0/devfile.yaml
+```
+
+**NOTE:**
+1. A known issue on Chrome can cause the [workspace initialization to hang](https:github.com/eclipse/che/issues/15188). Use another web browser to complete this step, for example, Firefox.
+1. You can have only one workspace running at a time per `devfile.yaml` file. However, you can have multiple workspaces based on unique `devfile.yaml` files.
 
 ![Create the Codewind workspace](/img/guide/eclipse-che-kabanero-ocp-create-codewind-workspace.png)
 
-When the installation completes make sure the Codewind workspace is running. For example, check that the Codewind persistent volume claim and replica set have been created:
+When the installation completes, make sure the Codewind workspace is running. Use the following commands to check that the Codewind persistent volume claim and replica set are created:
 
 ```
 oc project kabanero
@@ -183,62 +176,69 @@ workspacea5ez8brm1mymf0hq.che-workspace-pod-7dbfdddf8c      1         1         
 ```
 
 ## Add the OpenShift registry in Codewind
-These instructions are based on the Codewind guide [Adding the OpenShift registry in Codewind](https://www.eclipse.org/codewind/openshiftregistry.html#adding-the-openshift-registry-in-codewind). 
 
-On the right side of the Kabanero Landing Page click on the Codewind logo to open the Codewind project explorer. 
- Interacting with the project explorer will prompt you to set a deployment registry if you have not already done so.
+**Note:** The following instructions are based on the Codewind guide [Adding the OpenShift registry in Codewind](https://www.eclipse.org/codewind/openshiftregistry.html#adding-the-openshift-registry-in-codewind).
+
+On the right-hand side of the Kabanero Landing Page, click on the Codewind logo to open the Codewind project explorer. If you have not already done so, interacting with the project explorer prompts you to set a deployment registry.
 
 ![Check that Codewind is running in Che](/img/guide/eclipse-che-kabanero-ocp-check-codewind-running.png)
 
-For OCP4.x enter `image-registry.openshift-image-registry.svc:5000/<project name>` as the deployment registry. For example:
+For OCP4.x, enter `image-registry.openshift-image-registry.svc:5000/<project name>` as the deployment registry. For example:
 
 ![Adding the OpenShift registry in Codewind](/img/guide/eclipse-che-kabanero-ocp-add-openshift-registry-in-codewind.png)
 
-You will be asked if you want to deploy a test image to the registry. Click the `Yes` button to push the sample Hello World image
+When asked if you want to deploy a test image to the registry, click **Yes** to push the sample Hello World image, as show in the following image.
 
 ![Push the sample image](/img/guide/eclipse-che-kabanero-ocp-push-sample-image.png)
 
-You will see a confirmation message that the test has succeeded and the deployment registry saved
+A confirmation message indicates that the test has succeeded and the deployment registry is saved.
 
 ![Deployment registry test succeeded](/img/guide/eclipse-che-kabanero-ocp-save-registry-success-msg.png)
 
-## Add Kabanero stack to Codewind
+## Add Kabanero Collection templates to Codewind
 Open the Codewind project explorer by clicking on the Codewind logo on the right side of the workspace.
-Right click on `Projects > Manage Template Sources`. 
+Right click on **Projects** > **Manage Template Sources**.
 
-![Manage teamplate sources](/img/guide/eclipse-che-kabanero-ocp-manage-template-sources.png)
+![Manage template sources](/img/guide/eclipse-che-kabanero-ocp-manage-template-sources.png)
 
-Click on the `Add New` button to create a new template.
-Enter the Kabanero 0.3.0 collection `https:github.com/kabanero-io/collections/releases/download/0.3.0/kabanero-index.json`, then give it a name and description.
+Click on the **Add New** button to create a new template.
+
+Add the following Kabanero Collection URL in the pop up window and provide a name and description:
+
+```
+https:github.com/kabanero-io/collections/releases/download/0.3.0/kabanero-index.json
+```
+
 
 ![Add the Kabanero template source](/img/guide/eclipse-che-kabanero-ocp-add-kabanero-template-source.png)
 
-Enable only the Kabanero stack and disable others.
+Enable only the Kabanero template source and disable any other templates sources shown.
 
 ![Enable only the Kabanero template collection](/img/guide/eclipse-che-kabanero-ocp-enable-only-kabanero-template.png)
 
-## Create a microservices application 
-From the Codewind project explorer click on the `+` sign next to Projects to create a new project with the Kabanero 0.3.0 collection.
- Select the `Kabanero Eclipse MicroProfile` template and enter a name for your app. 
+Now that you have installed and enabled Che, you can create and run a microservice application to verify your development environment.
+
+## Create a microservices application
+From the Codewind project explorer click on the `+` sign next to **Projects** to create a new project with the Kabanero Collection.
+
+Select the `Kabanero Eclipse MicroProfile` template and enter a name for your application.
 
 ![Kabanero select template](/img/guide/eclipse-che-kabanero-ocp-select-template.png)
 
-Your new project is created, built, and compiled inside a container. 
-The project overview will show that the build was successful and that the application had started.
-To view the project logs, right click on the your project name, and select `Show all logs`. An `Output` tab
+Your new project is created, built, and compiled inside a container.
+The project overview shows that the build was successful and that the application has started.
+To view the project logs, right click on your project name, and select `Show all logs`. An `Output` tab
 is displayed containing the project's build logs.
 
 ![Kabanero project status](/img/guide/eclipse-che-kabanero-ocp-kabanero-project-status.png)
 
-Launch the application by clicking on the Application Endpoint. This opens a new browser window showing 
-the Welcome to your Appsody Microservice page.
+Launch the application by clicking on the Application Endpoint. This opens a new browser window showing
+the *Welcome to your Appsody Microservice* page.
 
 ![Eclipse MicroProfile sample application](/img/guide/eclipse-che-kabanero-ocp-mp-app.png)
 
-Make a change in the app and see that it's updated.
-
-You can view the application pod's in the `kabanero` namespace. The pod's name starts with `cw-`.
-For example:
+You can view the application pod in the `kabanero` namespace. The pod name starts with `cw-`.
+To see an example, run the following command:
 
 ```
 # oc get pods  -n kabanero | grep cw-
@@ -248,7 +248,7 @@ cw-javampapp-607e7be0-0bf0-11ea-823b-7867f86f7c-zdfcc             1/1     Runnin
 cw-javampapp-607e7be0-0bf0-11ea-823b-service-74tg4          cw-javampapp-607e7be0-che-kabanero.apps.scrunch.os.fyre.ibm.com                /      cw-javampapp-607e7be0-0bf0-11ea-823b-service          9080                                  None
 ```
 
-View the deployment:
+View the deployment by running the following commands:
 ```
 # oc get deployments -n kabanero | grep cw-
 cw-javampapp-f6ce4550-0ca2-11ea-8e85             1/1     1            1           170m
@@ -304,3 +304,5 @@ Events:
   Normal  ScalingReplicaSet  167m  deployment-controller  Scaled up replica set cw-javampapp-f6ce4550-0ca2-11ea-8e85-68ff9f555d to 1
   Normal  ScalingReplicaSet  135m  deployment-controller  Scaled up replica set cw-javampapp-f6ce4550-0ca2-11ea-8e85-68ff9f555d to 1
 ```
+
+Congratulations! You have successfully installed and enabled Eclipse Che in your Kabanero cluster and verified that you can create and run a microservice application.
